@@ -1,4 +1,5 @@
 library("Rgraphviz")
+library(comprehenr)
 
 nodes <- c("A", "B", "C", "D", "E");
 
@@ -116,5 +117,92 @@ greedy <- function(df){
 }
 
 greedy(df)
+
+
+
+djk <- function(df){
+  states <- rownames(df)
+  cols <- colnames(df)
+  actual_state <- states[1]
+  
+  route <- c(actual_state)
+  visited <- c(actual_state)
+  distances <- to_vec(for(i in seq(along=rownames(df))) NA)
+  distances[1] <- 0
+  
+  min_states <- c()
+  
+  while(length(visited) != length(states)){
+    print(paste("STATE: ", actual_state))
+    
+    for(state in cols){
+      pos <- which(cols==state)
+      value <- df[,actual_state][pos] 
+      print(paste("value: ", value))
+      
+      if(value == 0){
+        print("zero edge value!")
+        print(noquote(""))
+        next
+      }
+      
+      print("Updated distances: ")
+      if(is.na(distances[pos])){
+        distances[pos] = value
+      }else{
+        distances[pos] <- distances[pos]+value
+      }
+      print(distances)
+      print(noquote(""))
+    }
+    
+    if(length(min_states) > 0){
+      actual_state <- min_states[1]
+      visited <- append(visited, min_states[1])
+      min_states <- tail(min_states, -1)
+      route <- append(route, actual_state)
+      next
+    }
+    
+    min_value <- 10000
+    min_states <- c()
+    
+    for(distance in distances){
+      if(distance > 0 && distance < min_value){
+        positions <- which(distances==distance)
+        
+        for(pos in positions){
+          dis_state <- states[pos]
+          print(paste("dis_state: ", dis_state))
+          if(dis_state %in% visited){
+            print("already visited state")
+            next
+          }
+          
+          min_value <- distance
+          min_states <- append(min_states, dis_state)
+          print(paste("inside pos: ", pos))
+          print(paste("inside min_value: ", min_value))
+          print(paste("inside min_state: ", states[pos]))
+        }
+      }
+    }
+  
+    print(paste("min value: ", min_value))
+    print(paste("min states: ", min_states))
+    print(noquote(""))
+    
+    
+    visited <- append(visited, min_states[1])
+    actual_state <- min_states[1]
+    min_states <- tail(min_states, -1)
+    route <- append(route, actual_state)
+    Sys.sleep(1)
+  }
+  
+  print(route)
+}
+
+djk(df)
 
 
