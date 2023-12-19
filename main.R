@@ -60,3 +60,61 @@ for(row in rownames(df)){
 data <- get_attrs(full_graph)
 plot(full_graph, edgeAttrs=data$edge_attr, attrs=data$attr)
 
+
+
+greedy <- function(df){
+  total <- 0 
+  rows <- rownames(df)
+  cols <- colnames(df)
+  actual_row <- rows[1]
+  visited_states <- list()
+  
+  while(actual_row != tail(rows, n=1)){
+    min_value <- 10000
+    min_col <- actual_row
+    visited_states <- append(visited_states, actual_row)
+    
+    print(paste("actual state: ", actual_row))
+    print(df[,actual_row])
+    
+    for(col in cols){
+      pos <- which(cols==col)
+      print(paste("position: ", pos))
+      value <- df[,actual_row][pos]
+      print(paste("value: ", value))
+      
+      if(value == 0){
+        print("equal zero")
+        print(noquote(""))
+        next
+      }
+      
+      print("different of zero")
+      
+      if(value < min_value && !(col %in% visited_states)){
+        print(paste("new min value: ", value))
+        print(paste("new min col: ", col))
+        min_value <- value
+        min_col <- col
+      }
+      
+      print(noquote(""))
+      
+      Sys.sleep(1)
+    }
+    
+    if(min_col == actual_row){
+      print("Nothing found!")
+      break
+    }
+    
+    actual_row <- min_col
+    total <- total+min_value
+  }
+  
+  return(total)
+}
+
+greedy(df)
+
+
