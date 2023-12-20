@@ -1,5 +1,13 @@
 library("Rgraphviz")
 library(comprehenr)
+library(rstudioapi)
+
+script_directory <- dirname(rstudioapi::getActiveDocumentContext()$path)
+script_directory
+setwd(script_directory)
+
+
+browseVignettes("Rgraphviz")
 
 nodes <- c("A", "B", "C", "D", "E");
 
@@ -28,6 +36,9 @@ get_attrs <- function(graph){
 
 data <- get_attrs(graph)
 plot(graph, edgeAttrs=data$edge_attr, attrs=data$attr)
+
+dev.copy(png,filename="./assets/f1_graph.png")
+dev.off()
 
 df <- data.frame (
   A = c(0, 5.8, 5.8, 7.6, 8.8),
@@ -58,10 +69,15 @@ for(row in rownames(df)){
   }
 }
 
+
 data <- get_attrs(full_graph)
 plot(full_graph, edgeAttrs=data$edge_attr, attrs=data$attr)
 
+dev.copy(png,filename="./assets/graph.png")
+dev.off()
 
+graphics.off()
+help(png)
 
 greedy <- function(df){
   total <- 0 
@@ -205,4 +221,4 @@ djk <- function(df){
 
 djk(df)
 
-
+setwd('~')

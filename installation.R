@@ -1,6 +1,6 @@
 MIRROR <- "https://cran-r.c3sl.ufpr.br/"
 
-install.packages("comprehenr", repos=MIRROR)
+install.packages(c("comprehenr", "rstudioapi"), repos=MIRROR)
 
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager", repos=MIRROR)
