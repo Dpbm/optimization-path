@@ -12,3 +12,4 @@ dependencies:
     - matplotlib
     - JLDracula
     - dwave-ocean-sdk
+    - rustworkx
