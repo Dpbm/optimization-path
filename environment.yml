@@ -10,6 +10,8 @@ dependencies:
     - numpy
     - pandas
     - matplotlib
-    - JLDracula
     - dwave-ocean-sdk
     - rustworkx
+    - pennylane-qiskit
+    - pylatexenc
+    - tqdm
