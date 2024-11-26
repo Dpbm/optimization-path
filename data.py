@@ -38,7 +38,9 @@ class Node:
         self.value=value
         self.next=next
         self.previous = {label}
+        self.parent = None
         self.depth = 0
+        self.visited = False
 
     def update_previous(self, new_previous):
         self.previous = new_previous
@@ -82,6 +84,7 @@ while len(nodes_to_visit) > 0:
             continue
         new_node = Node(label,value=relations[f'{current_node_label}{label}'])
         new_node.update_previous(current_node.previous.union({label}))
+        new_node.parent = current_node
         new_node.update_depth(current_node.depth+1) 
 
         current_node.next.append(new_node)
