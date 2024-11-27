@@ -1,3 +1,5 @@
+from math import pi
+
 labels = {'A','B','C','D','E'}
 
 relations = {
@@ -31,6 +33,9 @@ relations = {
     'ED':1.4,
     'EE':0.0
 }
+
+def encode_angle(value, farest):
+    return (value*pi)/farest
 
 class Node:
     def __init__(self,label,value=0,next=None):
