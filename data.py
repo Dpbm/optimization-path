@@ -1,6 +1,41 @@
 from math import pi
 
+
+starting_point = 'A'
 labels = {'A','B','C','D','E'}
+
+bit_string_parts_index_relations = {
+    0 : {
+        0: 'B',
+        1: 'C',
+        2: 'D',
+        3: 'E'
+    },
+    1 : {
+        0: 'A',
+        1: 'C',
+        2: 'D',
+        3: 'E'
+    },
+    2 : {
+        0: 'A',
+        1: 'B',
+        2: 'D',
+        3: 'E'
+    }, 
+    3 : {
+        0: 'A',
+        1: 'B',
+        2: 'C',
+        3: 'E'
+    },
+    4: {
+        0: 'A',
+        1: 'B',
+        2: 'C',
+        3: 'D' 
+    }
+}
 
 relations = {
     'AA':0.0,
