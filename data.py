@@ -3,8 +3,15 @@ from math import pi
 
 starting_point = 'A'
 labels = {'A','B','C','D','E'}
+labels_index = {
+    'A':0,
+    'B':1,
+    'C':2,
+    'D':3,
+    'E':4
+}
 
-bit_string_parts_index_relations = {
+nodes_index_relations_split = {
     0 : {
         0: 'B',
         1: 'C',
@@ -71,62 +78,3 @@ relations = {
 
 def encode_angle(value, farest):
     return (value*pi)/farest
-
-class Node:
-    def __init__(self,label,value=0,next=None):
-        self.label=label
-        self.value=value
-        self.next=next
-        self.previous = {label}
-        self.parent = None
-        self.depth = 0
-        self.visited = False
-
-    def update_previous(self, new_previous):
-        self.previous = new_previous
-    
-    def update_depth(self, new_depth):
-        self.depth = new_depth
-
-    def label_is_ancient(self,label):
-        return label in self.previous
-
-    def is_leaf(self):
-        return self.next is None
-
-    def __str__(self):
-        return f"""
-        node label: {self.label}
-        node value: {self.value}
-        next nodes: {'None' if self.is_leaf() else ' '.join([node.label for node in self.next])}
-        previous: {' '.join(list(self.previous))}
-        """
-
-
-
-routes = Node('A')
-
-nodes_to_visit = [routes]
-
-while len(nodes_to_visit) > 0:
-    current_node = nodes_to_visit[0]
-    current_node_label = current_node.label 
-
-    is_the_last_level = current_node.depth >= 4
-    if(is_the_last_level):
-        nodes_to_visit.pop(0)
-        continue
-    else:
-        current_node.next = []
-
-    for label in labels:
-        if(current_node.label_is_ancient(label)):
-            continue
-        new_node = Node(label,value=relations[f'{current_node_label}{label}'])
-        new_node.update_previous(current_node.previous.union({label}))
-        new_node.parent = current_node
-        new_node.update_depth(current_node.depth+1) 
-
-        current_node.next.append(new_node)
-        nodes_to_visit.append(new_node)
-    nodes_to_visit.pop(0)

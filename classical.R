@@ -1,224 +1,181 @@
-library("Rgraphviz")
-library(comprehenr)
-library(rstudioapi)
+library("Rgraphviz");
+library(comprehenr);
+library(rstudioapi);
 
-script_directory <- dirname(rstudioapi::getActiveDocumentContext()$path)
-script_directory
-setwd(script_directory)
+#browseVignettes("Rgraphviz"); # RGraphviz Documentation
+
+script_directory <- dirname(rstudioapi::getActiveDocumentContext()$path);
+setwd(script_directory);
 
 
-browseVignettes("Rgraphviz")
+#----------------------------------------------------------------------------------
+# Setup Graph and data
+
 
 nodes <- c("A", "B", "C", "D", "E");
-
-graph <- new("graphNEL", nodes=nodes, edgemode="directed")
-graph <- addEdge("A", "B", graph, 5.8)
-graph <- addEdge("B", "C", graph, 2.4)
-graph <- addEdge("C", "D", graph, 5.6)
-graph <- addEdge("D", "E", graph, 1.5)
-graph <- addEdge("E", "A", graph, 9.8)
-
-
-get_attrs <- function(graph){
-  weights <- as.character(unlist(edgeWeights(graph)))
-  names(weights) <- edgeNames(graph)
-  edge_attr <- list()
-  attr <- list()
-  edge_attr$label <- weights
-  attr$edge$fontsize <- 8
-  
-  data <- list()
-  data$attr <- attr
-  data$edge_attr <- edge_attr
-  
-  return(data)
-}
-
-data <- get_attrs(graph)
-plot(graph, edgeAttrs=data$edge_attr, attrs=data$attr)
-
-dev.copy(png,filename="./assets/f1_graph.png")
-dev.off()
-
+graph <- new("graphNEL", nodes=nodes, edgemode="directed");
 df <- data.frame (
+  # A,B,C,D,E are column labels
   A = c(0, 5.8, 5.8, 7.6, 8.8),
-  B = c(5.3, 0, 2.4, 4.3, 4.3),
-  C = c(7.1, 1.7, 0, 3.5, 4.7),
-  D = c(8.7, 4.0, 3.4, 0, 1.4),
-  E = c(9.8, 5.1, 4.5, 1.4, 0)
-)
-rownames(df) <- nodes
-df
+  B = c(5.8, 0, 2.4, 4.3, 4.3),
+  C = c(5.8, 2.4, 0, 3.5, 4.7),
+  D = c(7.6, 4.3, 3.5, 0, 1.4),
+  E = c(8.8, 4.3, 4.7, 1.4, 0)
+);
 
-full_graph <- new("graphNEL", nodes=nodes, edgemode="directed")
-
-cols <- colnames(df)
-for(row in rownames(df)){
-  for(col in cols){
-    pos <- which(cols==col)
-    value <- df[,row][pos]
+column_labels <- nodes;
+for (col_label in column_labels){
+  values <- df[[col_label]];
+  
+  for(row_i in 1:length(column_labels)){
+    row_label <- column_labels[row_i];
+    weight <- values[row_i];
     
-    print(row)
-    print(col)
-    print(pos)
-    print(value)
-    print(noquote(""))
-    
-    
-    full_graph <- addEdge(row, col, full_graph, value)
+    print(cat(row_label, col_label, toString(weight), "\n"));
+    graph <- addEdge(col_label, row_label, graph, weight);
   }
 }
 
+##### GRAPH UTILS ######
+get_attrs <- function(graph){
+  weights <- as.character(unlist(edgeWeights(graph)));
+  names(weights) <- edgeNames(graph);
+  edge_attr <- list();
+  attr <- list();
+  edge_attr$label <- weights;
+  attr$edge$fontsize <- 6;
+  
+  data <- list();
+  data$attr <- attr;
+  data$edge_attr <- edge_attr;
+  
+  return(data);
+}
+###################
 
-data <- get_attrs(full_graph)
-plot(full_graph, edgeAttrs=data$edge_attr, attrs=data$attr)
+graph_data <- get_attrs(graph);
+plot(graph, edgeAttrs=graph_data$edge_attr, attrs=graph_data$attr);
 
-dev.copy(png,filename="./assets/graph.png")
-dev.off()
+dev.copy(png, filename="./assets/graph.png");
+dev.off();
 
-graphics.off()
-help(png)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Functions
+
+header <- function(name){
+  print("************************");
+  print(cat("Running ", name, " algorithm"));
+  print("************************");
+}
+
+show_result <- function(path, total){
+  print("Path: ")
+  print(toString(path));
+  print(cat("Total length: ", toString(total)));
+}
+
+is_all_na <- function(values){
+  return(sum(is.na(values)) == length(values));
+}
+
+is_empty <- function(array){
+  return(length(array)==0);
+}
 
 greedy <- function(df){
-  total <- 0 
-  rows <- rownames(df)
-  cols <- colnames(df)
-  actual_row <- rows[1]
-  visited_states <- list()
+  header("Greedy");
   
-  while(actual_row != tail(rows, n=1)){
-    min_value <- 10000
-    min_col <- actual_row
-    visited_states <- append(visited_states, actual_row)
+  path <- c("A");
+  path_length <- 0;
+  
+  for (col_i in 1:length(column_labels)){
+    values <- df[[col_i]];
+    values[col_i] <- NA;
     
-    print(paste("actual state: ", actual_row))
-    print(df[,actual_row])
+    min_pos <- which.min(values);
+    label <- column_labels[min_pos];
+    all_values_are_na <- FALSE
     
-    for(col in cols){
-      pos <- which(cols==col)
-      print(paste("position: ", pos))
-      value <- df[,actual_row][pos]
-      print(paste("value: ", value))
+    while(label %in% path){
+      values[min_pos] <- NA;
+      min_pos <- which.min(values);
       
-      if(value == 0){
-        print("equal zero")
-        print(noquote(""))
-        next
+      if(is_all_na(values)){
+        all_values_are_na <- TRUE
+        break;
       }
       
-      print("different of zero")
-      
-      if(value < min_value && !(col %in% visited_states)){
-        print(paste("new min value: ", value))
-        print(paste("new min col: ", col))
-        min_value <- value
-        min_col <- col
-      }
-      
-      print(noquote(""))
-      
-      Sys.sleep(1)
+      label <- column_labels[min_pos];
     }
     
-    if(min_col == actual_row){
-      print("Nothing found!")
-      break
+    if(all_values_are_na){
+      break;
     }
     
-    actual_row <- min_col
-    total <- total+min_value
+    path_length <- path_length + values[min_pos];
+    path <- append(path, label);
+    
   }
   
-  return(total)
+  show_result(path, path_length);
 }
 
-greedy(df)
+create_node <- function(label, pos, total_till_now, path){
+  return(list(
+      label=label,
+      pos=pos,
+      total=total_till_now,
+      path=path
+    ));
+}
 
+brute_force <- function(df){
+  header("Brute Force");
 
-
-djk <- function(df){
-  states <- rownames(df)
-  cols <- colnames(df)
-  actual_state <- states[1]
+  queue <- list(create_node("A", 1, 0, list("A")));
+  total_to_remove <- 0;
+  layer <- 0
+  shortest_path <- NULL
   
-  route <- c(actual_state)
-  visited <- c(actual_state)
-  distances <- to_vec(for(i in seq(along=rownames(df))) NA)
-  distances[1] <- 0
-  
-  min_states <- c()
-  
-  while(length(visited) != length(states)){
-    print(paste("STATE: ", actual_state))
-    
-    for(state in cols){
-      pos <- which(cols==state)
-      value <- df[,actual_state][pos] 
-      print(paste("value: ", value))
-      
-      if(value == 0){
-        print("zero edge value!")
-        print(noquote(""))
-        next
+  while(layer < 4){
+    total_to_remove <- length(queue);
+    for(current_node in queue){
+      adjacents <- list();
+      for(node_i in 1:length(column_labels)){
+        if(column_labels[node_i] %in% current_node$path){
+          next;
+        }
+        adjacents <- append(adjacents, node_i);
       }
       
-      print("Updated distances: ")
-      if(is.na(distances[pos])){
-        distances[pos] = value
-      }else{
-        distances[pos] <- distances[pos]+value
-      }
-      print(distances)
-      print(noquote(""))
-    }
-    
-    if(length(min_states) > 0){
-      actual_state <- min_states[1]
-      visited <- append(visited, min_states[1])
-      min_states <- tail(min_states, -1)
-      route <- append(route, actual_state)
-      next
-    }
-    
-    min_value <- 10000
-    min_states <- c()
-    
-    for(distance in distances){
-      if(distance > 0 && distance < min_value){
-        positions <- which(distances==distance)
+      for(adjacent in adjacents){
+        adjacent_label <- column_labels[adjacent];
+        adjacent_pos <- adjacent;
+        adjacent_total <- current_node$total + df[[current_node$pos]][adjacent_pos];
+        adjacent_path <- append(current_node$path, adjacent_label);
         
-        for(pos in positions){
-          dis_state <- states[pos]
-          print(paste("dis_state: ", dis_state))
-          if(dis_state %in% visited){
-            print("already visited state")
-            next
-          }
-          
-          min_value <- distance
-          min_states <- append(min_states, dis_state)
-          print(paste("inside pos: ", pos))
-          print(paste("inside min_value: ", min_value))
-          print(paste("inside min_state: ", states[pos]))
+        new_node <- create_node(adjacent_label, adjacent_pos, adjacent_total, adjacent_path);
+        queue <- append(queue, list(new_node));
+        
+        if(layer == 3 && (is.null(shortest_path) || new_node$total < shortest_path$total)){
+          shortest_path <- new_node;
         }
       }
     }
-  
-    print(paste("min value: ", min_value))
-    print(paste("min states: ", min_states))
-    print(noquote(""))
     
+    layer <- layer+1;
     
-    visited <- append(visited, min_states[1])
-    actual_state <- min_states[1]
-    min_states <- tail(min_states, -1)
-    route <- append(route, actual_state)
-    Sys.sleep(1)
+    #clear queue
+    for(i in 1:total_to_remove){
+      queue <- queue[-1];
+    }
   }
   
-  print(route)
+  show_result(shortest_path$path, shortest_path$total);
 }
 
-djk(df)
+greedy(df);
+brute_force(df);
 
 setwd('~')

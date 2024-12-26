@@ -232,4 +232,4 @@ poetry.toml
 pyrightconfig.json
 
 
-qubo-inspired-weights
+*.npy
