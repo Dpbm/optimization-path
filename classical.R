@@ -33,7 +33,7 @@ for (col_label in column_labels){
     row_label <- column_labels[row_i];
     weight <- values[row_i];
     
-    print(cat(row_label, col_label, toString(weight), "\n"));
+    print(paste(row_label, col_label, toString(weight), "\n"));
     graph <- addEdge(col_label, row_label, graph, weight);
   }
 }
@@ -67,14 +67,14 @@ dev.off();
 
 header <- function(name){
   print("************************");
-  print(cat("Running ", name, " algorithm"));
+  print(paste("Running ", name, " algorithm"));
   print("************************");
 }
 
 show_result <- function(path, total){
   print("Path: ")
   print(toString(path));
-  print(cat("Total length: ", toString(total)));
+  print(paste("Total length: ", toString(total)));
 }
 
 is_all_na <- function(values){
