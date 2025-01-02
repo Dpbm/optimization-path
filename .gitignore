@@ -233,3 +233,4 @@ pyrightconfig.json
 
 
 *.npy
+*.csv
