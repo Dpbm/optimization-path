@@ -1,21 +1,10 @@
-library("Rgraphviz");
-library(comprehenr);
 library(tidyverse);
 
-#library(rstudioapi);  # if you're using RSTUDIO
-
-#browseVignettes("Rgraphviz"); # RGraphviz Documentation
-
-#script_directory <- dirname(rstudioapi::getActiveDocumentContext()$path); # if you're using RSTUDIO
-#setwd(script_directory); # if you're using RSTUDIO
-
-
 #----------------------------------------------------------------------------------
-# Setup Graph and data
+# Setup data
 
 
 nodes <- c("A", "B", "C", "D", "E");
-graph <- new("graphNEL", nodes=nodes, edgemode="directed");
 df <- data.frame (
   # A,B,C,D,E are column labels
   A = c(0, 5.8, 5.8, 7.6, 8.8),
@@ -26,40 +15,6 @@ df <- data.frame (
 );
 
 column_labels <- nodes;
-for (col_label in column_labels){
-  values <- df[[col_label]];
-  
-  for(row_i in 1:length(column_labels)){
-    row_label <- column_labels[row_i];
-    weight <- values[row_i];
-    
-    print(paste(row_label, col_label, toString(weight), "\n"));
-    graph <- addEdge(col_label, row_label, graph, weight);
-  }
-}
-
-##### GRAPH UTILS ######
-get_attrs <- function(graph){
-  weights <- as.character(unlist(edgeWeights(graph)));
-  names(weights) <- edgeNames(graph);
-  edge_attr <- list();
-  attr <- list();
-  edge_attr$label <- weights;
-  attr$edge$fontsize <- 6;
-  
-  data <- list();
-  data$attr <- attr;
-  data$edge_attr <- edge_attr;
-  
-  return(data);
-}
-###################
-
-graph_data <- get_attrs(graph);
-plot(graph, edgeAttrs=graph_data$edge_attr, attrs=graph_data$attr);
-
-dev.copy(png, filename="./assets/graph.png");
-dev.off();
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -343,5 +298,3 @@ greedy(df);
 brute_force(df);
 dijkstra(df);
 kruskal(df);
-
-# setwd('~') # if you're using RSTUDIO

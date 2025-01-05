@@ -1,17 +1,18 @@
 name: path-optimization
 channels:
-  - conda-forge
+    - conda-forge
 dependencies:
-  - python=3.12
-  - pip
-  - pip:
-    - pennylane
-    - jupyterlab
-    - numpy
-    - pandas
-    - matplotlib
-    - dwave-ocean-sdk
-    - rustworkx
-    - pennylane-qiskit
-    - pylatexenc
-    - tqdm
+    - python=3.12
+    - pip
+    - pip:
+          - pennylane
+          - jupyterlab
+          - numpy
+          - pandas
+          - matplotlib
+          - dwave-ocean-sdk
+          - rustworkx
+          - networkx
+          - pennylane-qiskit
+          - pylatexenc
+          - tqdm
