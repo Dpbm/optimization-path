@@ -1,8 +1,18 @@
 {
     "cSpell.words": [
+        "debian",
         "dijkstra",
+        "Dimod",
         "graphviz",
+        "ipynb",
+        "jupyter",
+        "Km",
+        "Kruskal",
         "openssl",
-        "rstudio"
+        "qubo",
+        "QUBO",
+        "Rscript",
+        "rstudio",
+        "venv"
     ]
 }

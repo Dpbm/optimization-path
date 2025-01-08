@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 from data import relations, labels
 
 
-
 graph = nx.DiGraph()
 
 graph.add_nodes_from(list(labels))
